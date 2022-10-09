@@ -1,10 +1,25 @@
-from flask import Flask
+from flask import Flask, render_template
+from forms import LoginForm, RegisterForm
 
 app = Flask(__name__)
 
+app[]
+
 @app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+@app.route("/menu")
+def menu():
+    return "<p>Menu Page</p>"
+
+
+@app.route("/login")
+def login():
+	form = LoginForm()
+	return render_template("login.html", form=form)
+
+
+@app.route("/register")
+def register():
+	return "login page"
 
 
 if __name__ == "__main__":
