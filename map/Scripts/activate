@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\Nutzer\Desktop\John Cowley\map"
+VIRTUAL_ENV="C:\Users\Nutzer\Desktop\John Cowley\memorise-anything-project\map"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
