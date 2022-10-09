@@ -1,9 +1,11 @@
 from flask import Flask, render_template
 from forms import LoginForm, RegisterForm
 
+from app_secrets import FLASK_APP_SECRET_KEY
+
 app = Flask(__name__)
 
-app[]
+app.secret_key = FLASK_APP_SECRET_KEY
 
 @app.route("/")
 @app.route("/menu")
