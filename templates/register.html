@@ -48,6 +48,16 @@
                 {{ form.username (class="form-control form-control-lg") }}
                 </div>
 
+                <div class="form-group">
+                {{ form.country.label (class="form-control-label") }}
+                {{ form.country (class="form-control form-control-lg") }}
+                </div>
+
+                <div class="form-group">
+                {{ form.age.label (class="form-control-label") }}
+                {{ form.age (class="form-control form-control-lg") }}
+                </div>
+
                 <div class="col-auto mb-3"> 
                 </div>
                 <div class="form-row">
@@ -61,6 +71,14 @@
                         {{ form.confirm_password.label (class="form-control-label")}}
                         {{ form.confirm_password (class="form-control form-control-lg")}}   
                     </div>
+                </div>
+                <div class="form-group">
+                {{ form.subject_area_want_to_learn.label (class="form-control-label") }}
+                {{ form.subject_area_want_to_learn (class="form-control form-control-lg") }}
+                </div>
+                <div class="form-group">
+                {{ form.how_heard_about_the_project.label (class="form-control-label") }}
+                {{ form.how_heard_about_the_project (class="form-control form-control-lg") }}
                 </div>
                 {{ form.submit (class="btn btn-outline-success")}} 
             </form>
