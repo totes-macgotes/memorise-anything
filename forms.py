@@ -24,7 +24,8 @@ class RegisterForm(FlaskForm):
     age = SelectField("age", choices=[i for i in range (100)])
     education_level = SelectField("education level", choices=["primary", "secondary (high school)", "university", "post-grad"])
     password = PasswordField("password", validators=[DataRequired(message="*required")])
+    confirm_password = PasswordField("confirm password", validators=[DataRequired(message="*required"), EqualTo("password", message="Das Passwort stimmt nicht überein.")])
     subject_area_want_to_learn = TextAreaField("What subject area do you want to learn?", validators=[DataRequired(message="*required")])
     how_heard_about_the_project = TextAreaField("How did you hear about the project?", validators=[DataRequired(message="*required")])
-    confirm_password = PasswordField("confirm password", validators=[DataRequired(message="*required"), EqualTo("password", message="Das Passwort stimmt nicht überein.")])
+    
     submit = SubmitField("register")
