@@ -9,31 +9,3 @@ a = User(_id=0, first_name="test", last_name="test", user_email="test@", usernam
 with app.app_context():
 ...     User.query.all()
 ...
-
-
-
-[User 'tester'(1):
-                first_name: test
-                last_name: test
-                user_email: test@
-                username: tester
-                country: germany
-                age: 1
-                education_level: good
-                hashed_password: ABC
-                subject_area_want_to_learn: math
-                how_heard_about_the_project: google
-                , 
-User 'tester2'(2):
-                first_name: test
-                last_name: test
-                user_email: test@
-                username: tester2
-                country: germany
-                age: 1
-                education_level: good
-                hashed_password: ABC
-                subject_area_want_to_learn: math
-                how_heard_about_the_project: google
-                ]
->>>

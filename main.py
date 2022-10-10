@@ -1,6 +1,7 @@
-from flask import Flask, render_template, redirect, url_for
-from flask_login import LoginManager
+from flask import Flask, render_template, redirect, url_for, request, flash
+from flask_login import LoginManager, login_user, UserMixin
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 
 from forms import LoginForm, RegisterForm
 
@@ -17,14 +18,16 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///userdata.db"
 db = SQLAlchemy()
 db.init_app(app)
 
+bcrypt = Bcrypt(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 @login_manager.user_loader
-def load_user(_id):
-    return User.query.filter_by(_id=_id).first()
+def load_user(_id, UserMixin):
+	return User.query.filter_by(_id=_id).first()
 
-class User(db.Model):
+class User(db.Model, UserMixin):
 	_id = db.Column(db.Integer, primary_key=True)
 	first_name = db.Column(db.String, nullable=False)
 	last_name = db.Column(db.String, nullable=False)
@@ -54,7 +57,7 @@ class User(db.Model):
 @app.route("/")
 @app.route("/menu")
 def menu():
-    return "<p>Menu Page</p>"
+	return  render_template("menu.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -62,7 +65,17 @@ def login():
 	form = LoginForm()
 
 	if form.validate_on_submit():
-		return redirect(url_for("menu"))
+		 = User.query.filter_by(username=request.form["username"]).first()
+		if user:
+			if bcrypt.check_password_hash(user.hashed_password, request.form["password"]):
+				flash("Successfully logged in", "success")
+				login_user(user)
+				return redirect(url_for("menu"))
+			else:
+				flash(f"Invalid password for user {request.form['username']}", "danger")
+
+		else:
+			flash(f"No existing user named {request.form['username']}", "danger")
 
 	return render_template("login.html", form=form)
 
@@ -70,9 +83,33 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
 	form = RegisterForm()
+	if form.validate_on_submit() and request.form["password"] == request.form["confirm_password"]:
+		
+		pw_hash = bcrypt.generate_password_hash(request.form["password"].encode('utf8')).decode('utf8')
 
-	if form.validate_on_submit():
+		new_user = User(first_name=request.form["first_name"], 
+			last_name=request.form["last_name"], 
+			user_email=request.form["user_email"], 
+			username=request.form["username"], 
+			country=request.form["country"], 
+			age=request.form["age"], 
+			education_level=request.form["education_level"], 
+			hashed_password=pw_hash, 
+			subject_area_want_to_learn=request.form["subject_area_want_to_learn"], 
+			how_heard_about_the_project=request.form["how_heard_about_the_project"])
+
+		db.session.add(new_user)
+		db.session.commit()
+
+		login_user(new_user)
+		flash("Successfully registered", "success")
+
 		return redirect(url_for("menu"))
+
+	elif request.method == "POST":
+		for fieldName, errorMessages in form.errors.items():
+			for err in errorMessages:
+				flash(f"{fieldName}: {err}", "danger")
 
 	lower = string.ascii_lowercase
 	upper = string.ascii_uppercase
@@ -82,7 +119,6 @@ def register():
 	all = lower + upper + num + symbols
 	temp = random.sample(all, 12)
 	recommended_pw = "".join(temp)
-
 
 	return render_template("register.html", form=form, recommended_pw=recommended_pw)
 
