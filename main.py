@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
-from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user
+from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
@@ -63,6 +63,9 @@ def menu():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+	if current_user.is_authenticated:
+		return(redirect(url_for("menu")))
+
 	form = LoginForm()
 
 	if form.validate_on_submit():
@@ -70,7 +73,13 @@ def login():
 		if user:
 			if bcrypt.check_password_hash(user.hashed_password, request.form["password"]):
 				flash("Successfully logged in", "success")
-				login_user(user)
+
+				if "remember" in request.form:
+					login_user(user, remember=True)
+
+				else:
+					login_user(user)
+
 				return redirect(url_for("menu"))
 			else:
 				flash(f"Invalid password for user {request.form['username']}", "danger")

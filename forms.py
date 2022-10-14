@@ -13,6 +13,7 @@ class CountrySelectField(SelectField):
 class LoginForm(FlaskForm):
     username = StringField("username", validators=[DataRequired()])
     password = PasswordField("password", validators=[DataRequired()])
+    remember = BooleanField("Remember Me")
     submit = SubmitField("login")
 
 class RegisterForm(FlaskForm):
