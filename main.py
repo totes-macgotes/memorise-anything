@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
-from flask_login import LoginManager, login_user, UserMixin
+from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
@@ -24,11 +24,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 @login_manager.user_loader
-def load_user(_id, UserMixin):
-	return User.query.filter_by(_id=_id).first()
+def load_user(id):
+	return User.query.filter_by(id=id).first()
 
 class User(db.Model, UserMixin):
-	_id = db.Column(db.Integer, primary_key=True)
+	id = db.Column(db.Integer, primary_key=True)
 	first_name = db.Column(db.String, nullable=False)
 	last_name = db.Column(db.String, nullable=False)
 	user_email = db.Column(db.String, nullable=False)
@@ -41,7 +41,7 @@ class User(db.Model, UserMixin):
 	how_heard_about_the_project = db.Column(db.String, nullable=False)
 	
 	def __repr__(self):
-		return f"""User '{self.username}'({self._id}):
+		return f"""User '{self.username}'({self.id}):
 		first_name: {str(self.first_name)}
 		last_name: {str(self.last_name)}
 		user_email: {str(self.user_email)}
@@ -56,6 +56,7 @@ class User(db.Model, UserMixin):
 
 @app.route("/")
 @app.route("/menu")
+@login_required
 def menu():
 	return  render_template("menu.html")
 
@@ -65,7 +66,7 @@ def login():
 	form = LoginForm()
 
 	if form.validate_on_submit():
-		 = User.query.filter_by(username=request.form["username"]).first()
+		user = User.query.filter_by(username=request.form["username"]).first()
 		if user:
 			if bcrypt.check_password_hash(user.hashed_password, request.form["password"]):
 				flash("Successfully logged in", "success")
@@ -79,6 +80,11 @@ def login():
 
 	return render_template("login.html", form=form)
 
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
