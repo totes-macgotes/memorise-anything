@@ -1,9 +1,15 @@
 db.create_all()
 
-a = User(_id=0, first_name="test", last_name="test", user_email="test@", username="tester", country="germany", age=1, education_level="good", hashed_password="ABC", subject_area_want_to_learn="math", how_heard_about_the_project="google")
+
+from main import db, User, app
+
+a = User(first_name="test", last_name="test", user_email="test@", username="tester", country="germany", age=1, education_level="good", hashed_password="ABC", subject_area_want_to_learn="math", how_heard_about_the_project="google")
+
+g1 = Game(creator_id=1, title="test game")
 
  with app.app_context():
 ...     db.session.add(a)
+		db.session.add(g1)
 ...     db.session.commit()
 
 with app.app_context():

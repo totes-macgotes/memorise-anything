@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_login import LoginManager, login_user, UserMixin, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -22,10 +22,13 @@ bcrypt = Bcrypt(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = "login"
+login_manager.login_message_category = "info"
 
 @login_manager.user_loader
 def load_user(id):
 	return User.query.filter_by(id=id).first()
+
 
 class User(db.Model, UserMixin):
 	id = db.Column(db.Integer, primary_key=True)
@@ -54,11 +57,23 @@ class User(db.Model, UserMixin):
 		how_heard_about_the_project: {str(self.how_heard_about_the_project)}
 		"""
 
+class Game(db.Model, UserMixin):
+	id = db.Column(db.Integer, primary_key=True)
+	creator_id = db.Column(db.Integer, nullable=False)
+	title = db.Column(db.String, nullable=False)
+	
+	def __repr__(self):
+		return f"""Game '{self.title}'({self.id}):
+		creator_id: {str(self.creator_id)}
+		title: {str(self.title)}
+		"""
+
 @app.route("/")
 @app.route("/menu")
 @login_required
 def menu():
-	return  render_template("menu.html")
+	users_games = Game.query.filter_by(creator_id=current_user.id)
+	return render_template("menu.html",current_user=current_user, users_games=users_games)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -92,8 +107,8 @@ def login():
 @app.route("/logout")
 @login_required
 def logout():
-    logout_user()
-    return redirect(url_for("login"))
+	logout_user()	
+	return redirect(url_for("login"))
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -136,7 +151,6 @@ def register():
 	recommended_pw = "".join(temp)
 
 	return render_template("register.html", form=form, recommended_pw=recommended_pw)
-
 
 if __name__ == "__main__":
 	app.run(debug=True)

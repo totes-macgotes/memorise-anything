@@ -22,7 +22,16 @@
             {% endif %}
           {% endwith %}
         </div>
-        <div>Menu Page</div>
-      
+
+        <h1>Menu Page</h1>
+        <p>{{ current_user }}</p>
+
+
+        <h1>Games created by {{ current_user.username }}:</h1>
+       {% for game in users_games %}
+        <div class="card">
+          {{ game }}
+        </div>
+      {% endfor %}
 </body>
 </html>
