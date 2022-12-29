@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dataset editor</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+</head>
+<body>
+  <h1>Datasets</h1>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm">
+        <h2>Upload existing dataset</h2> 
+          <form method="post" enctype="multipart/form-data" action="/dataset_editor">
+            <input type="file" name="csv_file">
+            <input type="submit" value="upload">
+          </form>
+          <h2>Create new dataset</h2> 
+          <form method="post" enctype="multipart/form-data"  action="/dataset_editor">
+            <label for="name_0">Name:</label>
+            <input type="text" id="name_0" name="name_0">
+            <br>
+            <label for="text_1_0">Text 1:</label>
+            <input type="text" id="text_1_0" name="text_1_0">
+            <br>
+            <label for="text_2_0">Text 2:</label>
+            <input type="text" id="text_2_0" name="text_2_0">
+            <br>
+            <label for="image_0">Image:</label>
+            <input type="text" id="image_0" name="image_0">
+            <br>
+            <label for="sound_0">Sound:</label>
+            <input type="text" id="sound_0" name="sound_0">
+            <br>
+            <label for="tags_0">Tags:</label>
+          <input type="text" id="tags_0" name="tags_0">
+          <br>
+
+          <!-- Button zum Hinzufügen von Einträgen -->
+        <button onclick="addEntry(event)">add entry</button>
+        <input type="hidden" id="entry_count" name="entry_count" value="1">
+        <!-- JavaScript-Funktion zum Hinzufügen eines neuen Eintrags -->
+        <script>
+          let entryCount = 1;
+
+          function addEntry(event) {
+            console.log(entryCount)
+            // Füge ein neues Formular-Fragment hinzu
+            var newEntry = document.createElement("div");
+        newEntry.innerHTML = `
+          <h3>Entry ` + entryCount + `</h3>
+          <label for="name_` + entryCount + `">Name:</label>
+          <input type="text" id="name_` + entryCount + `" name="name_` + entryCount + `">
+          <br>
+          <label for="text_1_` + entryCount + `">Text 1:</label>
+          <input type="text" id="text_1_` + entryCount + `" name="text_1_` + entryCount + `">
+          <br>
+          <label for="text_2_` + entryCount + `">Text 2:</label>
+          <input type="text" id="text_2_` + entryCount + `" name="text_2_` + entryCount + `">
+          <br>
+          <label for="image_` + entryCount + `">Image:</label>
+          <input type="text" id="image_` + entryCount + `" name="image_` + entryCount + `">
+          <br>
+          <label for="sound_` + entryCount + `">Sound:</label>
+          <input type="text" id="sound_` + entryCount + `" name="sound_` + entryCount + `">
+          <br>
+          <label for="tags_` + entryCount + `">Tags:</label>
+          <input type="text" id="tags_` + entryCount + `" name="tags_` + entryCount + `">
+          <br>
+        `;
+            // Füge das Formular-Fragment dem Formular hinzu
+            document.getElementsByTagName("form")[1].appendChild(newEntry);
+            // Erhöhe den entry_count-Counter um 1
+            document.getElementById("entry_count").value++;
+            entryCount++;
+
+            event.preventDefault();
+          }
+        </script>
+
+          <input type="submit" value="create">
+          </form>
+      </div>
+      <div class="col-sm">
+        <table class="table table-dark">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Text 1</th>
+              <th scope="col">Text 2</th>
+              <th scope="col">Image</th>
+              <th scope="col">Sound</th>
+              <th scope="col">Tags</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in display_table %}
+            <tr>
+    
+              <td>{{ item[0] }}</td>
+              <td>{{ item[1] }}</td>
+              <td>{{ item[2] }}</td>
+              <td>{{ item[3] }}</td>
+              <td>{{ item[4] }}</td>
+              <td>{{ item[5] }}</td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+     
+    </div>
+  </div>
+ 
+</body>
+</html>

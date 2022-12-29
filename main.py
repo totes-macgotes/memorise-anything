@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
 from forms import LoginForm, RegisterForm
+from dataset_editor import *
 
 import string
 import random
@@ -12,6 +13,9 @@ from app_secrets import FLASK_APP_SECRET_KEY
 
 app = Flask(__name__)
 app.secret_key = FLASK_APP_SECRET_KEY
+
+# rules for other pages 
+app.add_url_rule('/dataset_editor', 'd_editor', d_editor, methods=['GET', 'POST'])
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///userdata.db"
 
@@ -67,6 +71,7 @@ class Game(db.Model, UserMixin):
 		creator_id: {str(self.creator_id)}
 		title: {str(self.title)}
 		"""
+
 
 @app.route("/")
 @app.route("/menu")
