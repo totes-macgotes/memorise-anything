@@ -11,6 +11,7 @@
 	<title>Menu Page</title>
     </head>
 <body>   
+    {% include 'navbar.html' %}
         <div>
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -33,5 +34,9 @@
           {{ game }}
         </div>
       {% endfor %}
+
+      <br><br>
+      <button onclick="window.location.href='gamesetup'">play</button>
+
 </body>
 </html>

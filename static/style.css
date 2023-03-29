@@ -1,0 +1,124 @@
+.card {
+  position: relative;
+  width: 200px;
+  height: 300px;
+  perspective: 1000px;
+}
+
+.card img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 70%;
+  height: 70%;
+  backface-visibility: hidden;
+  transition: transform 0.6s ease;
+}
+
+.card .front {
+  transform: rotateY(180deg);
+}
+
+.card.flip .front {
+  transform: rotateY(0deg);
+}
+
+.card.flip .back {
+  transform: rotateY(180deg);
+}
+
+.card img.front {
+transform: rotateY(180deg);
+position: relative; /* Hinzufügen einer Positionierung */
+}
+
+.card img.front span {
+display: block;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%); /* Zentrieren des Textes */
+}
+
+
+.shake-card {
+  position: relative;
+  animation: shake-card 0.5s linear;
+}
+
+@keyframes shake-card {
+  0% {
+      transform: translateX(0) rotate(0);
+    }
+    10% {
+      transform: translateX(-5px) rotate(-5deg);
+    }
+    20% {
+      transform: translateX(5px) rotate(5deg);
+    }
+    30% {
+      transform: translateX(-5px) rotate(-5deg);
+    }
+    40% {
+      transform: translateX(5px) rotate(5deg);
+    }
+    50% {
+      transform: translateX(-5px) rotate(-5deg);
+    }
+    60% {
+      transform: translateX(5px) rotate(5deg);
+    }
+    70% {
+      transform: translateX(-5px) rotate(-5deg);
+    }
+    80% {
+      transform: translateX(5px) rotate(5deg);
+    }
+    90% {
+      transform: translateX(-5px) rotate(-5deg);
+    }
+    100% {
+      transform: translateX(0) rotate(0);
+    }
+}
+
+.zoom-card {
+  animation-name: zoom-card;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+@keyframes zoom-card {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+#grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 Spalten */
+  grid-auto-rows: minmax(50px, auto); /* automatische Zeilenhöhe */
+  grid-gap: 10px; /* Abstand zwischen den Elementen */
+}
+
+
+#game-board {
+  width: 50%; 
+  margin: 0 auto;
+}
+
+#timer {
+  text-align: right;
+  font-size: 30px;
+  padding: 20px;
+}
+
+

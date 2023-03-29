@@ -4,10 +4,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
 from forms import LoginForm, RegisterForm
-from dataset_editor import *
+import card_creator
 
 import string
 import random
+import pandas as pd
+import os
+import csv
 
 from app_secrets import FLASK_APP_SECRET_KEY
 
@@ -15,7 +18,7 @@ app = Flask(__name__)
 app.secret_key = FLASK_APP_SECRET_KEY
 
 # rules for other pages 
-app.add_url_rule('/dataset_editor', 'd_editor', d_editor, methods=['GET', 'POST'])
+#app.add_url_rule('/dataset_editor', 'd_editor', d_editor, methods=['GET', 'POST'])
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///userdata.db"
 
@@ -28,6 +31,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 login_manager.login_message_category = "info"
+
 
 @login_manager.user_loader
 def load_user(id):
@@ -71,7 +75,7 @@ class Game(db.Model, UserMixin):
 		creator_id: {str(self.creator_id)}
 		title: {str(self.title)}
 		"""
-
+	
 
 @app.route("/")
 @app.route("/menu")
@@ -115,8 +119,7 @@ def logout():
 	logout_user()	
 	return redirect(url_for("login"))
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
+
 	form = RegisterForm()
 	if form.validate_on_submit() and request.form["password"] == request.form["confirm_password"]:
 		
@@ -156,6 +159,149 @@ def register():
 	recommended_pw = "".join(temp)
 
 	return render_template("register.html", form=form, recommended_pw=recommended_pw)
+
+@app.route("/gamesetup", methods=["GET", 'POST'])
+@login_required
+def game_setup():
+
+	display_table = []
+	unique_tags = []
+	if request.method == "POST":
+		if "csv_file" in request.files:
+			csv_file = request.files["csv_file"]
+			df = pd.read_csv(csv_file)
+
+			display_table = df.values
+		else:
+			with open('user_datasets/new_dataset.csv', 'w', newline='') as csvfile:
+				writer = csv.writer(csvfile, delimiter=',')
+				
+				# head row 
+				writer.writerow(["name", "text_1", "text_2", "image", "sound", "tags"])
+
+				for i in range(int(request.form['entry_count'])):
+					name = request.form['name_' + str(i)]
+					text_1 = request.form['text_1_' + str(i)]
+					text_2 = request.form['text_2_' + str(i)]
+					image = request.form['image_' + str(i)]
+					sound = request.form['sound_' + str(i)]
+					tags = request.form['tags_' + str(i)]
+				
+
+					writer.writerow([name, text_1, text_2, image, sound, tags])
+					display_table.append([name, text_1, text_2, image, sound, tags])
+
+	# game settings
+	if "dataset" in request.files:
+		file = request.files['dataset']
+		filename = file.filename
+		file.save(os.path.join('datasets', filename))
+
+	return render_template("game_setup.html", unique_tags=unique_tags, display_table=display_table)
+
+'''
+@app.route("/startgame")
+@login_required
+def start_game():
+
+	if "dataset" in request.files:
+		file = request.files['dataset']
+		filename = file.filename
+		file.save(os.path.join('datasets', filename))
+
+	return render_template("start_game.html")
+'''
+
+
+@app.route("/game", methods=["GET", 'POST'])
+@login_required
+def game():
+	filename = request.files['dataset'].filename
+
+	if not filename:
+		return "no dataset provided"
+
+	
+	max_cards = request.form.get('maxcards')
+	try:
+		int(max_cards)
+	except:
+		max_cards = 100000
+
+	game_mode_index = int(request.form.get('game_mode'))
+
+	df = pd.read_csv("user_datasets/" + filename)
+
+	df = df.head(int(max_cards))
+	
+	df2 = pd.DataFrame(columns=df.columns)
+
+	card_creator.clear_dir()
+
+	# text text
+	if(game_mode_index == 0):
+		for label, row in df.iterrows():
+			#label ist zeilennummer 
+			if(str(row["text_1"]) == "nan" or str(row["text_2"]) == "nan"):
+				continue
+
+			card_creator.create_text_card(str(row["text_1"]), str(label), True)
+			card_creator.create_text_card(str(row["text_2"]), str(label), False)
+
+			df2 = df2.append(row, ignore_index=True)
+
+	# text sound
+	elif(game_mode_index == 1):
+		for label, row in df.iterrows():
+			#label ist zeilennummer 
+			if(str(row["text_1"]) == "nan" or str(row["sound"]) == "nan"):
+				continue
+
+			card_creator.create_text_card(str(row["text_1"]), str(label), True)
+		
+			df2 = df2.append(row, ignore_index=True)
+
+	# text image
+	elif(game_mode_index == 2):
+		for label, row in df.iterrows():
+			#label ist zeilennummer 
+			if(str(row["text_1"]) == "nan" or str(row["image"]) == "nan"):
+				continue
+
+
+			card_creator.create_text_card(str(row["text_1"]), str(label), True)
+			card_creator.create_image_card(os.path.join("user_datasets", str(row["image"])), str(label), False)
+
+			df2 = df2.append(row, ignore_index=True)
+			
+	# random
+	elif(game_mode_index == 3):
+		for label, row in df.iterrows():
+			#label ist zeilennummer 
+			if(str(row["text_1"]) == "nan" or str(row["text_2"]) == "nan" or str(row["image"]) == "nan"):
+				continue
+
+			card_creator.create_text_card(str(row["text_1"]), str(label), True)
+			if random.choice([True, False]):
+				card_creator.create_text_card(str(row["text_2"]), str(label), False)
+			else:
+				card_creator.create_image_card(os.path.join("user_datasets", str(row["image"])), str(label), False)
+
+			df2 = df2.append(row, ignore_index=True)y
+
+
+	print(df2)
+	data = df2.to_dict(orient='records')
+	return render_template("game_engine/game.html", dataset=data, enumerate=enumerate, str=str, random=random, game_mode_index=game_mode_index)
+
+
+@app.route("/game_results", methods=['POST', 'GET'])
+@login_required
+def game_results():
+	if request.method == 'GET':
+		data = request.args	
+
+	return render_template("game_engine/game_results.html", data=data)
 
 if __name__ == "__main__":
 	app.run(debug=True)

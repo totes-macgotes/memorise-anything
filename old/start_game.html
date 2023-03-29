@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+	<form action="/game" method="POST" enctype="multipart/form-data">
+		<label for="dataset">Upload Dataset:</label>
+		<input type="file" id="dataset" name="dataset"><br><br>
+		<label for="maxcards">Max. Pairs:</label>
+		<input type="number" id="maxcards" name="maxcards" min="1"><br><br>
+		<label for="game_mode">Game mode:</label>
+		<select name="game_mode" id="game_mode">
+			<option value="0">text_1 - text_2</option>
+			<option value="1">text_1 - sound</option>
+			<option value="2">text_1 - image</option>
+			<option value="3">random</option>
+		</select>
+		<br><br>
+		<button type="submit">Start</button>
+		
+	</form>
+</body>
+</html>

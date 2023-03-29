@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div id="game_mode_index" value="{{ game_mode_index }}"></div>
+  <audio src="static/cancel.mp3" preload="auto"></audio>
+  <div id="game-board">
+  <div id="timer"></div>
+    <div id="grid">
+        {% for i, row in enumerate(dataset) %}
+        <div class="card" pair_id="{{i}}" frozen="false" revealed="false" cardA="true">
+              <img class="front" src="{{ url_for('static', filename='card_creator/' + str(i) + 'A.png') }}">
+              <img class="back" src="{{ url_for('static', filename='back.png') }}">
+          </div>
+          
+          <!-- text1 sound-->
+          {% if game_mode_index == 1 %}
+          <div class="card" pair_id="{{i}}" frozen="false" revealed="false" cardA="false" sound="{{row['sound']}}">
+            <img class="front" src="{{ url_for('static', filename='blank.png') }}">
+              <button onclick="event.stopPropagation(); playSound('{{ row['sound'] }}')"type="button" style="width: 50px; height: 50px; background:none; border:none; position: absolute; top: 40%; left: 40%; transform: translate(-50%, -50%);"> 
+                <img src="{{ url_for('static', filename='headphone_transparent.png') }}" alt="Button Bild">
+              </button>
+            <img class="back" src="{{ url_for('static', filename='back.png') }}">
+          </div>
+
+          <!-- random-->
+          {% elif game_mode_index == 3 %}
+            {% if random.randint(0, 1) == 0 %}
+              <div class="card" pair_id="{{i}}" frozen="false" revealed="false" cardA="false" sound="{{row['sound']}}">
+                <img class="front" src="{{ url_for('static', filename='blank.png') }}">
+                  <button onclick="event.stopPropagation(); playSound('{{ row['sound'] }}')"type="button" style="width: 50px; height: 50px; background:none; border:none; position: absolute; top: 40%; left: 40%; transform: translate(-50%, -50%);"> 
+                    <img src="{{ url_for('static', filename='headphone_transparent.png') }}" alt="Button Bild">
+                  </button>
+                <img class="back" src="{{ url_for('static', filename='back.png') }}">
+              </div>
+            {% else %}
+            <div class="card" pair_id="{{i}}" frozen="false" revealed="false" cardA="false">
+              <img class="front" src="{{ url_for('static', filename='card_creator/' + str(i) + 'B.png') }}">
+              <img class="back" src="{{ url_for('static', filename='back.png') }}">
+            </div>
+            {% endif %}
+
+
+          {% else %}
+          <div class="card" pair_id="{{i}}" frozen="false" revealed="false" cardA="false">
+            <img class="front" src="{{ url_for('static', filename='card_creator/' + str(i) + 'B.png') }}">
+            <img class="back" src="{{ url_for('static', filename='back.png') }}">
+          </div>
+          {% endif %} 
+        {% endfor %}
+    </div>      
+</div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script src="{{ url_for('static', filename='timer.js') }}"></script>
+</body>
+</html>
