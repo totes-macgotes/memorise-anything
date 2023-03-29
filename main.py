@@ -287,7 +287,7 @@ def game():
 			else:
 				card_creator.create_image_card(os.path.join("user_datasets", str(row["image"])), str(label), False)
 
-			df2 = df2.append(row, ignore_index=True)y
+			df2 = df2.append(row, ignore_index=True)
 
 
 	print(df2)
