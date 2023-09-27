@@ -1,13 +1,13 @@
 use the following cmds to update the changes 
 
-docker build -t flask-app:7 .
+docker build -t flask-app:10 .
 docker login
-docker tag flask-app:7 felischw/flask-app:7
-docker push felischw/flask-app:7
+docker tag flask-app:10 felischw/flask-app:10
+docker push felischw/flask-app:10
 
-auf dem server:
+auf dem server: (verbinden mit ssh root@162.0.238.133 -p 22)
 
-docker pull felischw/flask-app:7
+docker pull felischw/flask-app:10
 
 starten: 
-docker run -p 5000:5000 felischw/flask-app:7
+docker run -p 5000:5000 felischw/flask-app:10

@@ -81,7 +81,17 @@
                   {% for game_file in game_files %}
                       <li>
                           {{ game_file }}
-                          <button onclick=" navigator.clipboard.writeText('{{ game_file }}');">copy path</button>
+                          <button id="{{ game_file }}copyButton">Copy Path</button>
+                          <script>
+                          document.getElementById('{{ game_file }}copyButton').addEventListener('click', async () => {
+                            try {
+                              await navigator.clipboard.writeText('{{ game_file }}');
+                              console.log('Path copied to clipboard');
+                            } catch (err) {
+                              console.error('Failed to copy text: ', err);
+                            }
+                          });
+                          </script>
                       </li>
                   {% endfor %}
               </ul>
@@ -94,7 +104,7 @@
           <br><br>
 
           <h2>Create new dataset</h2> 
-          <form method="post" enctype="multipart/form-data"  action="/gamesetup">
+          <form method="post" name="create_dataset_form" enctype="multipart/form-data"  action="/gamesetup">
             <label for="name_0">Name (optional):</label>
             <input type="text" id="name_0" name="name_0">
             <br>
@@ -127,7 +137,7 @@
             var newEntry = document.createElement("div");
         newEntry.innerHTML = `
           <h3>Entry ` + entryCount + `</h3>
-          <label for="name_` + entryCount + `">Name:</label>
+          <label for="name_` + entryCount + `">Name (optional):</label>
           <input type="text" id="name_` + entryCount + `" name="name_` + entryCount + `">
           <br>
           <label for="text_1_` + entryCount + `">Text 1:</label>
@@ -146,52 +156,12 @@
           <input type="text" id="tags_` + entryCount + `" name="tags_` + entryCount + `">
           <br>
         `;
-            document.getElementsByTagName("form")[2].appendChild(newEntry);
+            document.getElementsByName("create_dataset_form")[0].appendChild(newEntry);
         
             document.getElementById("entry_count").value++;
             entryCount++;
 
             event.preventDefault();
-          }
-
-          function tableToArray() {
-            const table = document.querySelector(".table"); // Verwenden Sie die richtige Klasse oder ID Ihrer Tabelle
-            if(!table) return [];
-
-            const data = [];
-            for(const row of table.rows) {
-              const rowData = [];
-              for(const cell of row.cells) {
-                rowData.push(cell.innerText || cell.textContent);
-              }
-              data.push(rowData);
-            }
-            return data; // Dieses Array enthält jetzt die Daten Ihrer Tabelle.
-          }
-
-          function downloadCSV() {
-            const data = tableToArray(); // Ruft die Daten aus der Tabelle
-            if(data.length === 0) return;
-
-            // Die erste Zeile ist der Header, also nehmen wir den Rest als Daten.
-            const [header, ...rows] = data;
-
-            let csvContent = header.join(",") + "\n"; // Header der CSV-Datei
-            rows.forEach((row) => {
-              csvContent += row.join(",") + "\n";
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", "dataset.csv");
-            link.style.visibility = 'hidden';
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
           }
 
         </script>
@@ -207,5 +177,49 @@
     </div>
   </div>
 
+  <script>
+      function tableToArray() {
+            const table = document.querySelector(".table"); // Verwenden Sie die richtige Klasse oder ID Ihrer Tabelle
+            if(!table) return [];
+
+            const data = [];
+            for(const row of table.rows) {
+              const rowData = [];
+              for(const cell of row.cells) {
+                rowData.push(cell.innerText || cell.textContent);
+              }
+              data.push(rowData);
+            }
+            return data; // Dieses Array enthält jetzt die Daten Ihrer Tabelle.
+          }
+
+          function downloadCSV() {
+        const data = tableToArray(); // Ruft die Daten aus der Tabelle
+        if(data.length === 0) return;
+
+        // Die Header-Zeile manuell definieren
+        let csvContent = "name,text_1,text_2,image,sound,tags\n";
+
+        // Die erste Zeile der Tabelle ist wahrscheinlich der Tabellenkopf, also nehmen wir den Rest als Daten.
+        const rows = data.slice(1);
+
+        rows.forEach((row) => {
+          csvContent += row.join(",") + "\n";
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "dataset.csv");
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+  </script>
 </body>
 </html>

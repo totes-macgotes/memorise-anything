@@ -295,7 +295,7 @@ def game():
 			if random.choice([True, False]):
 				card_creator.create_text_card(str(row["text_2"]), str(label), False)
 			else:
-				card_creator.create_image_card(os.path.join("user_datasets", str(row["image"])), str(label), False)
+				card_creator.create_image_card(os.path.join("static/game_files", str(row["image"])), str(label), False)
 
 			df2 = pd.concat([df2, pd.DataFrame([row])], ignore_index=True)
 			#df2 = df2.append(row, ignore_index=True)
