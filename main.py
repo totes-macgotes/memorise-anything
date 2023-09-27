@@ -172,6 +172,12 @@ def game_setup():
 			df = pd.read_csv(csv_file)
 
 			display_table = df.values
+
+		elif "game_file" in request.files: 
+			game_file = request.files["game_file"]
+			#store game file
+			game_file.save(os.path.join('user_datasets/images', game_file.filename))
+
 		else:
 			with open('user_datasets/new_dataset.csv', 'w', newline='') as csvfile:
 				writer = csv.writer(csvfile, delimiter=',')
@@ -197,7 +203,7 @@ def game_setup():
 		filename = file.filename
 		file.save(os.path.join('datasets', filename))
 
-	return render_template("game_setup.html", unique_tags=unique_tags, display_table=display_table)
+	return render_template("game_setup.html", unique_tags=unique_tags, display_table=display_table, game_files=os.listdir('user_datasets/images'))
 
 '''
 @app.route("/startgame")
@@ -217,6 +223,7 @@ def start_game():
 @login_required
 def game():
 	filename = request.files['dataset'].filename
+	gamefile =  request.files['dataset']
 
 	if not filename:
 		return "no dataset provided"
@@ -230,7 +237,7 @@ def game():
 
 	game_mode_index = int(request.form.get('game_mode'))
 
-	df = pd.read_csv("user_datasets/" + filename)
+	df = pd.read_csv(gamefile)
 
 	df = df.head(int(max_cards))
 	
@@ -248,7 +255,8 @@ def game():
 			card_creator.create_text_card(str(row["text_1"]), str(label), True)
 			card_creator.create_text_card(str(row["text_2"]), str(label), False)
 
-			df2 = df2.append(row, ignore_index=True)
+			df2 = pd.concat([df2, pd.DataFrame([row])], ignore_index=True)
+			#df2 = df2.append(row, ignore_index=True)
 
 	# text sound
 	elif(game_mode_index == 1):
@@ -259,7 +267,8 @@ def game():
 
 			card_creator.create_text_card(str(row["text_1"]), str(label), True)
 		
-			df2 = df2.append(row, ignore_index=True)
+			df2 = pd.concat([df2, pd.DataFrame([row])], ignore_index=True)
+			#df2 = df2.append(row, ignore_index=True)
 
 	# text image
 	elif(game_mode_index == 2):
@@ -270,9 +279,10 @@ def game():
 
 
 			card_creator.create_text_card(str(row["text_1"]), str(label), True)
-			card_creator.create_image_card(os.path.join("user_datasets", str(row["image"])), str(label), False)
+			card_creator.create_image_card(os.path.join("static/game_files", str(row["image"])), str(label), False)
 
-			df2 = df2.append(row, ignore_index=True)
+			df2 = pd.concat([df2, pd.DataFrame([row])], ignore_index=True)
+			#df2 = df2.append(row, ignore_index=True)
 			
 	# random
 	elif(game_mode_index == 3):
@@ -287,7 +297,8 @@ def game():
 			else:
 				card_creator.create_image_card(os.path.join("user_datasets", str(row["image"])), str(label), False)
 
-			df2 = df2.append(row, ignore_index=True)
+			df2 = pd.concat([df2, pd.DataFrame([row])], ignore_index=True)
+			#df2 = df2.append(row, ignore_index=True)
 
 
 	print(df2)
@@ -304,4 +315,4 @@ def game_results():
 	return render_template("game_engine/game_results.html", data=data)
 
 if __name__ == "__main__":
-	app.run(debug=True)
+	app.run(host='0.0.0.0', port=5000, debug=True)

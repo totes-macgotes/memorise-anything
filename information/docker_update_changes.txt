@@ -1,0 +1,13 @@
+use the following cmds to update the changes 
+
+docker build -t flask-app:7 .
+docker login
+docker tag flask-app:7 felischw/flask-app:7
+docker push felischw/flask-app:7
+
+auf dem server:
+
+docker pull felischw/flask-app:7
+
+starten: 
+docker run -p 5000:5000 felischw/flask-app:7

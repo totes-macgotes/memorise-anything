@@ -14,7 +14,7 @@
         <form id="form1" name="form1" action="/game" method="POST" enctype="multipart/form-data">
             <label for="dataset">Upload Dataset:</label>
             <input type="file" id="dataset" name="dataset"><br><br>
-            <label for="maxcards">Max. Pairs:</label>
+            <label for="maxcards">Max. Pairs (optional):</label>
             <input type="number" id="maxcards" name="maxcards" min="1"><br><br>
             <label for="game_mode">Game mode:</label>
             <select name="game_mode" id="game_mode">
@@ -71,11 +71,29 @@
             <input type="submit" value="upload">
           </form>
 
-
+        
           <br><br>
+
+          <h2>Game Files</h2> 
+            <div style="border: 1px solid black">
+              <ul>
+                  {% for game_file in game_files %}
+                      <li>
+                          {{ game_file }}
+                          <button onclick=" navigator.clipboard.writeText('{{ game_file }}');">copy path</button>
+                      </li>
+                  {% endfor %}
+              </ul>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="file" name="game_file">
+                <button type="submit">upload</button> <!-- security enhancements required here -->
+            </form>
+          <br><br>
+
           <h2>Create new dataset</h2> 
           <form method="post" enctype="multipart/form-data"  action="/gamesetup">
-            <label for="name_0">Name:</label>
+            <label for="name_0">Name (optional):</label>
             <input type="text" id="name_0" name="name_0">
             <br>
             <label for="text_1_0">Text 1:</label>

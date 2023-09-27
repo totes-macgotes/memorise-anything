@@ -147,7 +147,7 @@ function checkForPair(){
 }
 
 function playSound(sound){
-    var audio = new Audio('static/sounds/' + sound);
+    var audio = new Audio('static/game_files/' + sound);
     audio.play();
 }
 
