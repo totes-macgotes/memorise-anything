@@ -176,7 +176,7 @@ def game_setup():
 		elif "game_file" in request.files: 
 			game_file = request.files["game_file"]
 			#store game file
-			game_file.save(os.path.join('user_datasets/images', game_file.filename))
+			game_file.save(os.path.join('static/game_files', game_file.filename))
 
 		else:
 			with open('user_datasets/new_dataset.csv', 'w', newline='') as csvfile:
@@ -203,7 +203,7 @@ def game_setup():
 		filename = file.filename
 		file.save(os.path.join('datasets', filename))
 
-	return render_template("game_setup.html", unique_tags=unique_tags, display_table=display_table, game_files=os.listdir('user_datasets/images'))
+	return render_template("game_setup.html", unique_tags=unique_tags, display_table=display_table, game_files=os.listdir('static/game_files'))
 
 '''
 @app.route("/startgame")
@@ -299,7 +299,6 @@ def game():
 
 			df2 = pd.concat([df2, pd.DataFrame([row])], ignore_index=True)
 			#df2 = df2.append(row, ignore_index=True)
-
 
 	print(df2)
 	data = df2.to_dict(orient='records')
